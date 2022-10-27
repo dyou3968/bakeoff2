@@ -116,9 +116,16 @@ void draw() {
   translate(logoX, logoY); //translate draw center to the center oft he logo square
   rotate(radians(logoRotation)); //rotate using the logo square as the origin
   noStroke();
-  fill(60, 60, 192, 192);
+  
+  if (checkForSuccess()) {
+    fill(#00FF00);
+  } else {
+    fill(60, 60, 192, 192);
+  }  
+ 
   rect(0, 0, logoZ, logoZ);
   popMatrix();
+ 
 
   //===========DRAW EXAMPLE CONTROLS=================
   fill(255);
