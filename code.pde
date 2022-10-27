@@ -13,7 +13,7 @@ int startTime = 0; // time starts when the first click is captured
 int finishTime = 0; //records the time of the final click
 boolean userDone = false; //is the user done
 
-boolean shapePlaced = true;
+boolean shapePlaced = false;
 
 final int screenPPI = 72; //what is the DPI of the screen you are using
 //you can test this by drawing a 72x72 pixel rectangle in code, and then confirming with a ruler it is 1x1 inch. 
@@ -177,8 +177,11 @@ void mousePressed()
     println("time started!");
   }
   
-  shapePlaced = !shapePlaced;
-  if (shapePlaced) {
+  if (dist(logoX, logoY, mouseX, mouseY) < inchToPix(.2f)) {
+    shapePlaced = !shapePlaced;
+  }
+  
+  if (shapePlaced && (dist(logoX, logoY, mouseX, mouseY) < inchToPix(.2f))) {
     curX = mouseX;
     curY = mouseY;
   }
