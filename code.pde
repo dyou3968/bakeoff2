@@ -13,6 +13,8 @@ int startTime = 0; // time starts when the first click is captured
 int finishTime = 0; //records the time of the final click
 boolean userDone = false; //is the user done
 
+boolean shapePlaced = true;
+
 final int screenPPI = 72; //what is the DPI of the screen you are using
 //you can test this by drawing a 72x72 pixel rectangle in code, and then confirming with a ruler it is 1x1 inch. 
 
@@ -21,6 +23,9 @@ float logoX = 500;
 float logoY = 500;
 float logoZ = 50f;
 float logoRotation = 0;
+
+float curX = 0;
+float curY = 0;
 
 private class Destination
 {
@@ -65,6 +70,15 @@ void draw() {
   background(40); //background is dark grey
   fill(200);
   noStroke();
+  
+  
+  if (!shapePlaced) {
+    logoX = mouseX;
+    logoY = mouseY;
+  } else {
+    logoX = curX;
+    logoY = curY;
+  }
   
   //Test square in the top left corner. Should be 1 x 1 inch
   //rect(inchToPix(0.5), inchToPix(0.5), inchToPix(1), inchToPix(1));
@@ -151,6 +165,8 @@ void scaffoldControlLogic()
   text("down", width/2, height-inchToPix(.4f));
   if (mousePressed && dist(width/2, height, mouseX, mouseY)<inchToPix(.8f))
     logoY+=inchToPix(.02f);
+    
+  text("submit", inchToPix(.6f), height*3/4); 
 }
 
 void mousePressed()
@@ -160,12 +176,22 @@ void mousePressed()
     startTime = millis();
     println("time started!");
   }
+  
+  shapePlaced = !shapePlaced;
+  if (shapePlaced) {
+    curX = mouseX;
+    curY = mouseY;
+  }
 }
 
 void mouseReleased()
 {
   //check to see if user clicked middle of screen within 3 inches, which this code uses as a submit button
-  if (dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
+  
+  
+  
+  
+  if (dist(inchToPix(.6f), height*3/4, mouseX, mouseY)<inchToPix(.6f))
   {
     if (userDone==false && !checkForSuccess())
       errorCount++;
@@ -177,7 +203,7 @@ void mouseReleased()
       userDone = true;
       finishTime = millis();
     }
-  }
+  }   
 }
 
 //probably shouldn't modify this, but email me if you want to for some good reason.
