@@ -4,7 +4,7 @@ import java.util.Collections;
 //these are variables you should probably leave alone
 int index = 0; //starts at zero-ith trial
 float border = 0; //some padding from the sides of window, set later
-int trialCount = 10; //WILL BE MODIFIED FOR THE BAKEOFF
+int trialCount = 3; //WILL BE MODIFIED FOR THE BAKEOFF
  //this will be set higher for the bakeoff
 int trialIndex = 0; //what trial are we on
 int errorCount = 0;  //used to keep track of errors
@@ -21,6 +21,7 @@ float logoX = 500;
 float logoY = 500;
 float logoZ = 50f;
 float logoRotation = 0;
+float rotationSpeed = 0.25;
 
 private class Destination
 {
@@ -79,6 +80,10 @@ void draw() {
     return;
   }
 
+  //===========AUTO ROTATE=================
+  logoRotation = (logoRotation + rotationSpeed) % 360;
+  
+  
   //===========DRAW DESTINATION SQUARES=================
   for (int i=trialIndex; i<trialCount; i++) // reduces over time
   {
@@ -102,7 +107,13 @@ void draw() {
   translate(logoX, logoY); //translate draw center to the center oft he logo square
   rotate(radians(logoRotation)); //rotate using the logo square as the origin
   noStroke();
-  fill(60, 60, 192, 192);
+
+   if (checkForSuccess()) {
+    fill(#00FF00);
+  } else {
+    fill(60, 60, 192, 192);
+  }  
+  
   rect(0, 0, logoZ, logoZ);
   popMatrix();
 
@@ -151,6 +162,8 @@ void scaffoldControlLogic()
   text("down", width/2, height-inchToPix(.4f));
   if (mousePressed && dist(width/2, height, mouseX, mouseY)<inchToPix(.8f))
     logoY+=inchToPix(.02f);
+
+   text("submit", inchToPix(.6f), height*3/4); 
 }
 
 void mousePressed()
@@ -165,7 +178,7 @@ void mousePressed()
 void mouseReleased()
 {
   //check to see if user clicked middle of screen within 3 inches, which this code uses as a submit button
-  if (dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
+  if (dist(inchToPix(.6f), height*3/4, mouseX, mouseY)<inchToPix(.6f))
   {
     if (userDone==false && !checkForSuccess())
       errorCount++;
@@ -177,16 +190,16 @@ void mouseReleased()
       userDone = true;
       finishTime = millis();
     }
-  }
+  }   
 }
 
 //probably shouldn't modify this, but email me if you want to for some good reason.
 public boolean checkForSuccess()
 {
-  Destination d = destinations.get(trialIndex);	
+  Destination d = destinations.get(trialIndex);  
   boolean closeDist = dist(d.x, d.y, logoX, logoY)<inchToPix(.05f); //has to be within +-0.05"
   boolean closeRotation = calculateDifferenceBetweenAngles(d.rotation, logoRotation)<=5;
-  boolean closeZ = abs(d.z - logoZ)<inchToPix(.1f); //has to be within +-0.1"	
+  boolean closeZ = abs(d.z - logoZ)<inchToPix(.1f); //has to be within +-0.1"  
 
   println("Close Enough Distance: " + closeDist + " (logo X/Y = " + d.x + "/" + d.y + ", destination X/Y = " + logoX + "/" + logoY +")");
   println("Close Enough Rotation: " + closeRotation + " (rot dist="+calculateDifferenceBetweenAngles(d.rotation, logoRotation)+")");
