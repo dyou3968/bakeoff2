@@ -4,7 +4,7 @@ import java.util.Collections;
 //these are variables you should probably leave alone
 int index = 0; //starts at zero-ith trial
 float border = 0; //some padding from the sides of window, set later
-int trialCount = 3; //WILL BE MODIFIED FOR THE BAKEOFF
+int trialCount = 10; //WILL BE MODIFIED FOR THE BAKEOFF
  //this will be set higher for the bakeoff
 int trialIndex = 0; //what trial are we on
 int errorCount = 0;  //used to keep track of errors
@@ -156,7 +156,7 @@ void scaffoldControlLogic()
   if (mousePressed && dist(width, height, mouseX, mouseY)<inchToPix(.8f))
     logoZ = constrain(logoZ+inchToPix(.02f), .01, inchToPix(4f)); //leave min and max alone! 
 
-   text("submit", inchToPix(.6f), height*3/4); 
+   text("submit", width - 1.5 * inchToPix(.6f), height*8/10); 
 }
 
 void mousePressed()
@@ -180,7 +180,7 @@ void mousePressed()
 void mouseReleased()
 {
   //check to see if user clicked middle of screen within 3 inches, which this code uses as a submit button
-  if (dist(inchToPix(.6f), height*3/4, mouseX, mouseY)<inchToPix(.6f))
+  if (dist(width - 1.5 * inchToPix(.6f), height*8/10, mouseX, mouseY)<inchToPix(.6f))
   {
     if (userDone==false && !checkForSuccess())
       errorCount++;
