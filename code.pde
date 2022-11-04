@@ -126,9 +126,6 @@ void draw() {
   rotate(logoRotation); //rotate using the logo square as the origin
   noStroke();
 
-
-
-
    if (closeDist & closeRotation & closeZ) {
     fill(#34B233);
     cursor(HAND);
@@ -142,15 +139,11 @@ void draw() {
   popMatrix();
 
   //===========DRAW EXAMPLE CONTROLS=================
-  
   scaffoldControlLogic();
   fill(255);
   text("Trial " + (trialIndex+1) + " of " +trialCount, inchToPix(1f), inchToPix(.3f));
 }
 
-
-
-//my example design for control, which is terrible
 void scaffoldControlLogic()
 {
   
@@ -205,6 +198,23 @@ void scaffoldControlLogic()
 void mousePressed()
 {
   
+  if (canSubmit) {
+    if (userDone==false && !checkForSuccess())
+      errorCount++;
+
+    trialIndex++; //and move on to next trial
+
+    if (trialIndex==trialCount && userDone==false)
+    {
+      userDone = true;
+      finishTime = millis();
+      return;
+    }
+    canSubmit = false;
+    option = 0;
+    return;
+  }   
+  
   if (dist(width/4, inchToPix(.6f), mouseX, mouseY)< inchToPix(.6f)){
     option = 0;
     return;
@@ -232,31 +242,29 @@ void mousePressed()
   }
 }
 
-void mouseWheel(MouseEvent event) {
-  float e = event.getCount();
-  option = int((option + abs(e)) % 3);
-  println(e);
-  println("test");
-}
+//void mouseWheel(MouseEvent event) {
+//  float e = event.getCount();
+//  option = int((option + abs(e)) % 3);
+//  println(e);
+//  println("test");
+//}
 
 void mouseReleased()
 {
-   
-  if (canSubmit)
-  {
-    if (userDone==false && !checkForSuccess())
-      errorCount++;
-
-    trialIndex++; //and move on to next trial
-
-    if (trialIndex==trialCount && userDone==false)
-    {
-      userDone = true;
-      finishTime = millis();
-    }
-    canSubmit = false;
+  Destination d = destinations.get(min(trialIndex, trialCount - 1));  
+  boolean closeDist = dist(d.x, d.y, logoX, logoY)<inchToPix(.05f); //has to be within +-0.05"
+  boolean closeRotation = calculateDifferenceBetweenAngles(d.rotation, degrees(logoRotation))<=5;
+  //boolean closeZ = abs(d.z - logoZ)<inchToPix(.1f); //has to be within +-0.1"    
+  
+  if (closeDist & closeRotation) {
+    option = 2;
+  } else if (closeDist) {
+    option = 1;
+  } else {
     option = 0;
-  } 
+  }
+  
+
 }
 
 //probably shouldn't modify this, but email me if you want to for some good reason.
