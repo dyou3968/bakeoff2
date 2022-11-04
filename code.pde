@@ -13,8 +13,6 @@ int startTime = 0; // time starts when the first click is captured
 int finishTime = 0; //records the time of the final click
 boolean userDone = false; //is the user done
 
-int option = 0;
-
 final int screenPPI = 72; //what is the DPI of the screen you are using
 //you can test this by drawing a 72x72 pixel rectangle in code, and then confirming with a ruler it is 1x1 inch. 
 
@@ -23,11 +21,6 @@ float logoX = 500;
 float logoY = 500;
 float logoZ = 50f;
 float logoRotation = 0;
-
-boolean canSubmit = false;
-
-float curX = 0;
-float curY = 0;
 
 private class Destination
 {
@@ -40,7 +33,6 @@ private class Destination
 ArrayList<Destination> destinations = new ArrayList<Destination>();
 
 void setup() {
-  
   size(1000, 800);  
   rectMode(CENTER);
   textFont(createFont("Arial", inchToPix(.3f))); //sets the font to Arial that is 0.3" tall
@@ -73,7 +65,6 @@ void draw() {
   background(40); //background is dark grey
   fill(200);
   noStroke();
-
   
   //Test square in the top left corner. Should be 1 x 1 inch
   //rect(inchToPix(0.5), inchToPix(0.5), inchToPix(1), inchToPix(1));
@@ -88,8 +79,6 @@ void draw() {
     return;
   }
 
-  
-  
   //===========DRAW DESTINATION SQUARES=================
   for (int i=trialIndex; i<trialCount; i++) // reduces over time
   {
@@ -108,97 +97,76 @@ void draw() {
     popMatrix();
   }
 
-  Destination d = destinations.get(trialIndex);  
-  boolean closeDist = dist(d.x, d.y, logoX, logoY)<inchToPix(.05f); //has to be within +-0.05"
-  boolean closeRotation = calculateDifferenceBetweenAngles(d.rotation, degrees(logoRotation))<=5;
-  boolean closeZ = abs(d.z - logoZ)<inchToPix(.1f); //has to be within +-0.1"   
-
-  //===========DRAW LINE=================
-  if (option == 0) {
-    stroke(200);
-    line(logoX, logoY, d.x, d.y);
-  }
-  
-  
   //===========DRAW LOGO SQUARE=================
   pushMatrix();
   translate(logoX, logoY); //translate draw center to the center oft he logo square
-  rotate(logoRotation); //rotate using the logo square as the origin
+  rotate(radians(logoRotation)); //rotate using the logo square as the origin
   noStroke();
-
-   if (closeDist & closeRotation & closeZ) {
-    fill(#34B233);
-    cursor(HAND);
-    canSubmit = true;
-  } else {
-    fill(60, 60, 192, 192);
-    cursor(ARROW);
-  }  
-
+  fill(60, 60, 192, 192);
   rect(0, 0, logoZ, logoZ);
   popMatrix();
 
   //===========DRAW EXAMPLE CONTROLS=================
-  scaffoldControlLogic();
   fill(255);
-  text("Trial " + (trialIndex+1) + " of " +trialCount, inchToPix(1f), inchToPix(.3f));
+  scaffoldControlLogic(); //you are going to want to replace this!
+  text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchToPix(.8f));
 }
 
+//my example design for control, which is terrible
 void scaffoldControlLogic()
 {
-  
-  Destination d = destinations.get(trialIndex);  
-  boolean closeDist = dist(d.x, d.y, logoX, logoY)<inchToPix(.05f); //has to be within +-0.05"
-  boolean closeRotation = calculateDifferenceBetweenAngles(d.rotation, degrees(logoRotation))<=5;
-  boolean closeZ = abs(d.z - logoZ)<inchToPix(.1f); //has to be within +-0.1"    
-  
-  noStroke();
-  if (option == 0) {
-    stroke(#90EE90);
-    strokeWeight(6);
-  }
-  if (closeDist) {
-    fill(#34B233);
-  } else {
-    fill(255);
-  }
-  rect(width/4, inchToPix(.6f), 80, 60);
-  fill(0);
-  text("Move", width/4, inchToPix(.7f));
-  
-  noStroke();
-  if (option == 1) {
-    stroke(#90EE90);
-    strokeWeight(6);
-  }  
-  if (closeRotation) {
-    fill(#34B233);
-  } else {
-    fill(255);
-  } 
-  rect(width/2, inchToPix(.6f), 80, 60);
-  fill(0);
-  text("Rotate", width/2, inchToPix(.7f));
-  
-  if (closeZ) {
-    fill(#34B233);
-  } else {
-    fill(255);
-  }   
-  noStroke();
-  if (option == 2) {
-    stroke(#90EE90);
-    strokeWeight(6);
-  }    
-  rect(width*3/4, inchToPix(.6f), 80, 60);
-  fill(0);
-  text("Resize", width*3/4, inchToPix(.7f));  
+  //upper left corner, rotate counterclockwise
+  text("CCW", inchToPix(.4f), inchToPix(.4f));
+  if (mousePressed && dist(0, 0, mouseX, mouseY)<inchToPix(.8f))
+    logoRotation--;
+
+  //upper right corner, rotate clockwise
+  text("CW", width-inchToPix(.4f), inchToPix(.4f));
+  if (mousePressed && dist(width, 0, mouseX, mouseY)<inchToPix(.8f))
+    logoRotation++;
+
+  //lower left corner, decrease Z
+  text("-", inchToPix(.4f), height-inchToPix(.4f));
+  if (mousePressed && dist(0, height, mouseX, mouseY)<inchToPix(.8f))
+    logoZ = constrain(logoZ-inchToPix(.02f), .01, inchToPix(4f)); //leave min and max alone!
+
+  //lower right corner, increase Z
+  text("+", width-inchToPix(.4f), height-inchToPix(.4f));
+  if (mousePressed && dist(width, height, mouseX, mouseY)<inchToPix(.8f))
+    logoZ = constrain(logoZ+inchToPix(.02f), .01, inchToPix(4f)); //leave min and max alone! 
+
+  //left middle, move left
+  text("left", inchToPix(.4f), height/2);
+  if (mousePressed && dist(0, height/2, mouseX, mouseY)<inchToPix(.8f))
+    logoX-=inchToPix(.02f);
+
+  text("right", width-inchToPix(.4f), height/2);
+  if (mousePressed && dist(width, height/2, mouseX, mouseY)<inchToPix(.8f))
+    logoX+=inchToPix(.02f);
+
+  text("up", width/2, inchToPix(.4f));
+  if (mousePressed && dist(width/2, 0, mouseX, mouseY)<inchToPix(.8f))
+    logoY-=inchToPix(.02f);
+
+  text("down", width/2, height-inchToPix(.4f));
+  if (mousePressed && dist(width/2, height, mouseX, mouseY)<inchToPix(.8f))
+    logoY+=inchToPix(.02f);
 }
 
 void mousePressed()
 {
-  
-  if (canSubmit) {
+  if (startTime == 0) //start time on the instant of the first user click
+  {
+    startTime = millis();
+    println("time started!");
+  }
+}
+
+void mouseReleased()
+{
+  //check to see if user clicked middle of screen within 3 inches, which this code uses as a submit button
+  if (dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
+  {
     if (userDone==false && !checkForSuccess())
       errorCount++;
 
@@ -208,72 +176,17 @@ void mousePressed()
     {
       userDone = true;
       finishTime = millis();
-      return;
     }
-    canSubmit = false;
-    option = 0;
-    return;
-  }   
-  
-  if (dist(width/4, inchToPix(.6f), mouseX, mouseY)< inchToPix(.6f)){
-    option = 0;
-    return;
-  } else if (dist(width/2, inchToPix(.6f), mouseX, mouseY)< inchToPix(.6f)){
-    option = 1;
-    return;
-  } else if (dist(width*3/4, inchToPix(.6f), mouseX, mouseY)< inchToPix(.6f)){
-    option = 2;
-    return;
-  }   
-
-  if (option == 0) {
-    logoX = mouseX;
-    logoY = mouseY;
-  } else if (option == 1) {  
-    logoRotation = (float) (atan2(mouseY - logoY, mouseX - logoX) + PI/4);
-  } else {
-    logoZ = 1.5*dist(mouseX, mouseY, logoX, logoY);
-  }    
-  
-  if (startTime == 0) //start time on the instant of the first user click
-  {
-    startTime = millis();
-    println("time started!");
   }
-}
-
-//void mouseWheel(MouseEvent event) {
-//  float e = event.getCount();
-//  option = int((option + abs(e)) % 3);
-//  println(e);
-//  println("test");
-//}
-
-void mouseReleased()
-{
-  Destination d = destinations.get(min(trialIndex, trialCount - 1));  
-  boolean closeDist = dist(d.x, d.y, logoX, logoY)<inchToPix(.05f); //has to be within +-0.05"
-  boolean closeRotation = calculateDifferenceBetweenAngles(d.rotation, degrees(logoRotation))<=5;
-  //boolean closeZ = abs(d.z - logoZ)<inchToPix(.1f); //has to be within +-0.1"    
-  
-  if (closeDist & closeRotation) {
-    option = 2;
-  } else if (closeDist) {
-    option = 1;
-  } else {
-    option = 0;
-  }
-  
-
 }
 
 //probably shouldn't modify this, but email me if you want to for some good reason.
 public boolean checkForSuccess()
 {
-  Destination d = destinations.get(trialIndex);  
+  Destination d = destinations.get(trialIndex);	
   boolean closeDist = dist(d.x, d.y, logoX, logoY)<inchToPix(.05f); //has to be within +-0.05"
-  boolean closeRotation = calculateDifferenceBetweenAngles(d.rotation, degrees(logoRotation))<=5;
-  boolean closeZ = abs(d.z - logoZ)<inchToPix(.1f); //has to be within +-0.1"  
+  boolean closeRotation = calculateDifferenceBetweenAngles(d.rotation, logoRotation)<=5;
+  boolean closeZ = abs(d.z - logoZ)<inchToPix(.1f); //has to be within +-0.1"	
 
   println("Close Enough Distance: " + closeDist + " (logo X/Y = " + d.x + "/" + d.y + ", destination X/Y = " + logoX + "/" + logoY +")");
   println("Close Enough Rotation: " + closeRotation + " (rot dist="+calculateDifferenceBetweenAngles(d.rotation, logoRotation)+")");
