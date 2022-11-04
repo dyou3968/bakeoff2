@@ -4,7 +4,7 @@ import java.util.Collections;
 //these are variables you should probably leave alone
 int index = 0; //starts at zero-ith trial
 float border = 0; //some padding from the sides of window, set later
-int trialCount = 5; //WILL BE MODIFIED FOR THE BAKEOFF
+int trialCount = 10; //WILL BE MODIFIED FOR THE BAKEOFF
  //this will be set higher for the bakeoff
 int trialIndex = 0; //what trial are we on
 int errorCount = 0;  //used to keep track of errors
@@ -126,7 +126,6 @@ void draw() {
   rotate(logoRotation); //rotate using the logo square as the origin
   noStroke();
 
-
    if (closeDist & closeRotation & closeZ) {
     fill(#34B233);
     cursor(HAND);
@@ -140,15 +139,11 @@ void draw() {
   popMatrix();
 
   //===========DRAW EXAMPLE CONTROLS=================
-  
   scaffoldControlLogic();
   fill(255);
   text("Trial " + (trialIndex+1) + " of " +trialCount, inchToPix(1f), inchToPix(.3f));
 }
 
-
-
-//my example design for control, which is terrible
 void scaffoldControlLogic()
 {
   
