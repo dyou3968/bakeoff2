@@ -119,6 +119,11 @@ void draw() {
     line(logoX, logoY, d.x, d.y);
   }
   
+  //===========DRAW CIRCLE AT CENTER OF DESTINATION=================
+  noStroke();
+  fill(#FFA500);
+  circle(d.x, d.y, 20);
+  
   
   //===========DRAW LOGO SQUARE=================
   pushMatrix();
@@ -231,6 +236,7 @@ void mousePressed()
     logoY = mouseY;
   } else if (option == 1) {  
     logoRotation = (float) (atan2(mouseY - logoY, mouseX - logoX) + PI/4);
+    logoZ = 1.5*dist(mouseX, mouseY, logoX, logoY);
   } else {
     logoZ = 1.5*dist(mouseX, mouseY, logoX, logoY);
   }    
