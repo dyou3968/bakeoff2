@@ -138,6 +138,7 @@ void draw() {
   } else {
     fill(60, 60, 192, 192);
     cursor(ARROW);
+    canSubmit = false;
   }  
 
   rect(0, 0, logoZ, logoZ);
@@ -198,12 +199,19 @@ void scaffoldControlLogic()
   rect(width*3/4, inchToPix(.6f), 80, 60);
   fill(0);
   text("Resize", width*3/4, inchToPix(.7f));  
+  
+  
+  noStroke();
+  fill(#ff0000);
+  rect(width/2, height - inchToPix(.6f), 80, 60);
+  fill(0);
+  text("Submit", width/2, height - inchToPix(.5f));  
 }
 
 void mousePressed()
 {
   
-  if (canSubmit) {
+  if ((canSubmit) || (dist(width/2, height - inchToPix(.6f), mouseX, mouseY)< inchToPix(.6f))) {
     if (userDone==false && !checkForSuccess())
       errorCount++;
 
@@ -229,34 +237,8 @@ void mousePressed()
   } else if (dist(width*3/4, inchToPix(.6f), mouseX, mouseY)< inchToPix(.6f)){
     option = 2;
     return;
-  }   
-
-  if (option == 0) {
-    logoX = mouseX;
-    logoY = mouseY;
-  } else if (option == 1) {  
-    logoRotation = (float) (atan2(mouseY - logoY, mouseX - logoX) + PI/4);
-    logoZ = 1.5*dist(mouseX, mouseY, logoX, logoY);
-  } else {
-    logoZ = 1.5*dist(mouseX, mouseY, logoX, logoY);
   }    
-  
-  if (startTime == 0) //start time on the instant of the first user click
-  {
-    startTime = millis();
-    println("time started!");
-  }
-}
 
-//void mouseWheel(MouseEvent event) {
-//  float e = event.getCount();
-//  option = int((option + abs(e)) % 3);
-//  println(e);
-//  println("test");
-//}
-
-void mouseReleased()
-{
   Destination d = destinations.get(min(trialIndex, trialCount - 1));  
   boolean closeDist = dist(d.x, d.y, logoX, logoY)<inchToPix(.05f); //has to be within +-0.05"
   boolean closeRotation = calculateDifferenceBetweenAngles(d.rotation, degrees(logoRotation))<=5;
@@ -270,7 +252,30 @@ void mouseReleased()
     option = 0;
   }
   
+  
+  if (startTime == 0) //start time on the instant of the first user click
+  {
+    startTime = millis();
+    println("time started!");
+  }
+}
 
+void mouseDragged()
+{
+  if (option == 0) {
+    logoX = mouseX;
+    logoY = mouseY;
+  } else if (option == 1) {  
+    logoRotation = (float) (atan2(mouseY - logoY, mouseX - logoX) + PI/4);
+    logoZ = 1.5*dist(mouseX, mouseY, logoX, logoY);
+  } else {
+    logoZ = 1.5*dist(mouseX, mouseY, logoX, logoY);
+  }   
+}
+
+void mouseReleased()
+{
+ 
 }
 
 //probably shouldn't modify this, but email me if you want to for some good reason.
